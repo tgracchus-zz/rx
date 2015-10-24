@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html ng-app="pagesApp">
+<head>
+    <title>Login</title>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge">
+    <meta charset="UTF-8">
+
+    <!-- load bootstrap and fontawesome via CDN -->
+    <link rel="stylesheet" href="//localhost:8080/css/bootstrap.min.css"/>
+
+    <!-- load angular via CDN -->
+    <script src="//localhost:8080/js/angular.min.js"></script>
+    <script src="//localhost:8080/js/angular-cookies.min.js"></script>
+    <script src="//localhost:8080/app/pagesApp.js"></script>
+</head>
+<body>
+
+<div class="container" ng-controller="loginController">
+<header>
+    <nav class="navbar navbar-default">
+        <div class="container-fluid">
+            <div class="navbar-header">
+                <a class="navbar-brand" href="/pages/index.html">Home</a>
+            </div>
+            <div>
+                <ul class="nav navbar-nav">
+                    <li ng-class="{ active: isActive('/pages/page1')}"><a href="/pages/login.html">Login</a></li>
+                    <li ng-class="{ active: isActive('/pages/page1')}"><a href="/pages/page1.html?session={{session.sessionId}}">Page 1</a></li>
+                    <li ng-class="{ active: isActive('/pages/page2')}"><a href="/pages/page2.html?session={{session.sessionId}}">Page 2</a></li>
+                    <li ng-class="{ active: isActive('/pages/page3')}"><a href="/pages/page3.html?session={{session.sessionId}}">Page 3</a></li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+</header>
+
+Welcome to the Pages Application !!!
+
+</div>
+
+
+</body>
+</html>

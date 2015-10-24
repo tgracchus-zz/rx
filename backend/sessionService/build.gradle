@@ -1,0 +1,29 @@
+apply plugin: 'application'
+
+buildscript {
+    repositories { jcenter() }
+    dependencies {
+        classpath 'com.netflix.nebula:gradle-extra-configurations-plugin:2.2.0'
+    }
+}
+
+dependencies {
+
+    //Karyon
+    compile project(":server");
+}
+
+
+task runServer(dependsOn: [classes], type: JavaExec) {
+    group = "com.test"
+    description = "Run RX netty"
+
+    main = "com.schibsted.backend.app.SessionService"
+    classpath = sourceSets.main.runtimeClasspath
+
+    jvmArgs "-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=5005"
+    systemProperty 'java.awt.headless', 'true'
+    systemProperty 'archaius.deployment.environment', 'dev'
+}
+
+
