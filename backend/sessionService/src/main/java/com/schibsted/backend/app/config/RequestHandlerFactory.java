@@ -56,8 +56,8 @@ public class RequestHandlerFactory {
         credentials.put(userAll.getUserId(), userAll);
 
         //SessionService
-        SessionService sessionService = new DefaultSessionService(60 * 1000 * 5, credentials);
-
+        DefaultSessionService sessionService = new DefaultSessionService(60 * 1000 * 5, credentials);
+        sessionService.startExpiration();
 
         //HealthCheck Endpoint
         RequestParser<Void> voidRequestParse = new VoidRequestParser();

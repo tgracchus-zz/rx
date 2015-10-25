@@ -4,11 +4,12 @@ import com.schibsted.backend.app.dto.AuthorizationContext;
 import com.schibsted.backend.app.dto.LoginContext;
 import com.schibsted.backend.app.model.*;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentMap;
-import java.util.concurrent.DelayQueue;
+import java.util.concurrent.*;
+import java.util.concurrent.locks.LockSupport;
 
 /**
  * Created by ulises on 10/10/15.
@@ -21,8 +22,9 @@ public class DefaultSessionService implements SessionService {
     private final ConcurrentMap<String, UUID> sessionByUser;
     private final DelayQueue<Session> expirationQueue;
 
+    private final ExecutorService executorService;
 
-    private long expirationInMilliseconds;
+    private final long expirationInMilliseconds;
 
     public DefaultSessionService(long expirationInMilliseconds,
                                  ConcurrentMap<String, Credentials> credentialsByUser) {
@@ -35,6 +37,16 @@ public class DefaultSessionService implements SessionService {
 
         this.expirationInMilliseconds = expirationInMilliseconds;
 
+        executorService =  Executors.newSingleThreadExecutor();
+
+    }
+
+    public void startExpiration(){
+        executorService.execute(new ExpireThread(this,expirationInMilliseconds));
+    }
+
+    public void stopExpiration(){
+        executorService.shutdown();
     }
 
     @Override
@@ -46,7 +58,7 @@ public class DefaultSessionService implements SessionService {
                 .map(credentials -> {
                     UUID sessionId = sessionByUser.computeIfAbsent(credentials.getUserId(), userId -> UUID.randomUUID());
                     Session session = sessionsById.computeIfAbsent(sessionId, uuid -> {
-                        Session newSession = new Session(uuid, principal.getUserId(), expirationInMilliseconds,credentials.getRoles());
+                        Session newSession = new Session(uuid, principal.getUserId(), expirationInMilliseconds, credentials.getRoles());
                         return newSession;
                     });
 
@@ -86,4 +98,36 @@ public class DefaultSessionService implements SessionService {
     public SessionHealthCheck healtcheck() {
         return new SessionHealthCheck(sessionsById.size(), sessionByUser.size(), expirationQueue.size());
     }
+
+
+
+
+    private static class ExpireThread implements Runnable {
+
+        private final DefaultSessionService sessionService;
+
+        private final long wakeUpTime;
+
+        public ExpireThread(DefaultSessionService sessionService, long wakeUpTime) {
+            this.sessionService = sessionService;
+            this.wakeUpTime = wakeUpTime * 20000;
+        }
+
+        @Override
+        public void run() {
+            while (1 == 1) {
+                expireTokens();
+                LockSupport.parkNanos(wakeUpTime);
+
+            }
+        }
+
+        private void expireTokens() {
+            List<Session> sessions = new ArrayList<>();
+            sessionService.expirationQueue.drainTo(sessions);
+            sessions.forEach(session -> sessionService.logout(session.getSessionId()));
+
+        }
+    }
+
 }
