@@ -18,7 +18,7 @@ task runServer(dependsOn: [classes], type: JavaExec) {
     group = "com.test"
     description = "Run RX netty"
 
-    main = "com.schibsted.frontend.FrontEndServer"
+    main = "com.frontend.FrontEndServer"
     classpath = sourceSets.main.runtimeClasspath
 
     jvmArgs "-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=5006"
@@ -27,6 +27,7 @@ task runServer(dependsOn: [classes], type: JavaExec) {
 }
 
 dependencies {
+    compile 'com.fasterxml.jackson.core:jackson-core:2.6.3'
     compile 'org.eclipse.jetty:jetty-server:9.3.5.v20151012'
     compile 'org.eclipse.jetty:jetty-servlet:9.3.5.v20151012'
     compile 'org.eclipse.jetty:jetty-client:9.3.5.v20151012'

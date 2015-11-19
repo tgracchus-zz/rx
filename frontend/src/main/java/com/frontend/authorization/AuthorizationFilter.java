@@ -1,9 +1,14 @@
-package com.schibsted.frontend.authorization;
+package com.frontend.authorization;
+
+import com.frontend.FrontEndConstants;
+import com.frontend.cookie.CookieHelper;
 
 import javax.servlet.*;
+import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.util.Optional;
 import java.util.logging.Logger;
 
 /**
@@ -32,16 +37,28 @@ public class AuthorizationFilter implements Filter {
         HttpServletRequest httpServletRequest = (HttpServletRequest) request;
         HttpServletResponse httpServletResponse = (HttpServletResponse) response;
 
-        if (authorizationServices
-                .authorize(httpServletRequest.getRequestURI().toString(), httpServletRequest.getQueryString())) {
-            chain.doFilter(request, response);
-        } else {
-            httpServletResponse.sendRedirect("/pages/login.html");
+        if (!httpServletRequest.getRequestURI().contains("/pages/login.html")) {
+
+            Optional<String> session = CookieHelper.getCookieValue(httpServletRequest, FrontEndConstants.SESSION_COOKIE_NAME)
+                    .flatMap(s -> CookieHelper.parseSessionId(s));
+
+
+            if (session.isPresent() && authorizationServices
+                    .authorize(httpServletRequest.getRequestURI().toString(), session.get())) {
+
+                chain.doFilter(request, response);
+            } else {
+                httpServletResponse.sendRedirect("/pages/login.html");
+            }
         }
+
+        chain.doFilter(request, response);
     }
 
     @Override
     public void destroy() {
         log.info("AuthorizationFilter destroy");
     }
+
+
 }

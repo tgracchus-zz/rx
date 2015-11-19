@@ -1,4 +1,4 @@
-package com.schibsted.frontend.authorization;
+package com.frontend.authorization;
 
 import java.util.Optional;
 

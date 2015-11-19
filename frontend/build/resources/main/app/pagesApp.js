@@ -3,21 +3,16 @@ var pagesApp = angular.module('pagesApp', ['ngCookies']);
 
 // CONTROLLERS
 pagesApp.controller('loginController',
- ['$scope','$http','$cookies','$location','$window', function ($scope,$http,$cookies,$location,$window) {
+ ['$scope','$http','$location','$window', function ($scope,$http,$location,$window) {
 
-  $scope.session = {"sessionId" : null}
+    $scope.logged = false;
 
     $scope.isActive = function (viewLocation) {
          return viewLocation === $location.path();
      };
 
     $scope.isLogged = function() {
-        $scope.session = $cookies.getObject("session")
-        if($scope.session){
-            return true;
-        }else{
-             return false
-        }
+       return $scope.logged;
     }
 
 
@@ -30,40 +25,28 @@ pagesApp.controller('loginController',
 
         $http({
             method: 'POST',
-            url: 'http://localhost:8888/login',
+            url: 'http://localhost:8080/login',
             data: loginContext,
             headers: {}
         })
         .then(function successCallback(response) {
-                $scope.session = response.data;
-                $cookies.putObject("session",response.data)
-                form.success = true;
-                form.error =false;
+                $scope.logged = true;
               }, function errorCallback(response) {
-                 form.success = false;
-                 form.error =true;
+                 $scope.logged = false;
               });
     }
 
     $scope.logout = function(form) {
-            var session = $cookies.getObject("session")
-            var logoutContext = {
-                "sessionId" : session.sessionId,
-            }
 
             $http({
                 method: 'POST',
-                url: 'http://localhost:8888/logout',
-                data: logoutContext,
+                url: 'http://localhost:8080/logout',
                 headers: {}
             })
             .then(function successCallback(response) {
-                    $cookies.putObject("session",null)
-                     $scope.session = null
+                    $scope.logged = false;
                   }, function errorCallback(response) {
-                    $cookies.putObject("session",null)
-                      $scope.session = null
-
+                    $scope.logged = false;
             });
 
             $window.location.reload();

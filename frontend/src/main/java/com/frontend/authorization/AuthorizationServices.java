@@ -1,4 +1,4 @@
-package com.schibsted.frontend.authorization;
+package com.frontend.authorization;
 
 import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.client.api.Request;
@@ -15,24 +15,20 @@ public class AuthorizationServices {
 
     private final HttpClient client;
     private final RolDecider rolDecider;
-    private final SessionIdParser sessionIdParser;
 
-    public AuthorizationServices(HttpClient client, RolDecider rolDecider, SessionIdParser sessionIdParser) {
+    public AuthorizationServices(HttpClient client, RolDecider rolDecider) {
         this.client = client;
         this.rolDecider = rolDecider;
-        this.sessionIdParser = sessionIdParser;
     }
 
 
-    public boolean authorize(String requestUri, String queryString) {
-
+    public boolean authorize(String requestUri, String sessionId) {
 
         Optional<String> rolOpt = rolDecider.parseRol(requestUri);
-        Optional<String> sessionIdOpt = sessionIdParser.parseSessionId(queryString);
 
-        if (rolOpt.isPresent() && sessionIdOpt.isPresent()) {
+        if (rolOpt.isPresent()){
             StringContentProvider sessionContext =
-                    new StringContentProvider("{\"sessionId\":\"" + sessionIdOpt.get() + "\",\"roleToCheck\":\"" + rolOpt.get() + "\"}");
+                    new StringContentProvider("{\"sessionId\":\"" + sessionId + "\",\"roleToCheck\":\"" + rolOpt.get() + "\"}");
 
             Request request = client.POST("http://localhost:8888/authorization")
                     .content(sessionContext);
@@ -44,9 +40,8 @@ public class AuthorizationServices {
             } catch (InterruptedException | ExecutionException e) {
                 return false;
             }
-        } else if (rolOpt.isPresent()) {
-            return false;
         }
+
         return true;
     }
 

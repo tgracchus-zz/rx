@@ -1,16 +1,18 @@
-package com.schibsted.frontend;
+package com.frontend;
 
-import com.schibsted.frontend.authorization.AuthorizationFilter;
-import com.schibsted.frontend.authorization.AuthorizationServices;
-import com.schibsted.frontend.authorization.RolDecider;
-import com.schibsted.frontend.authorization.SessionIdParser;
+import com.frontend.authorization.AuthorizationFilter;
+import com.frontend.authorization.AuthorizationServices;
+import com.frontend.authorization.RolDecider;
+import com.frontend.login.LoginServices;
+import com.frontend.login.LoginServlet;
+import com.frontend.login.LogoutServlet;
 import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.handler.ContextHandlerCollection;
-import org.eclipse.jetty.server.handler.ResourceHandler;
 import org.eclipse.jetty.servlet.DefaultServlet;
 import org.eclipse.jetty.servlet.FilterHolder;
 import org.eclipse.jetty.servlet.ServletContextHandler;
+import org.eclipse.jetty.servlet.ServletHolder;
 import org.eclipse.jetty.util.resource.Resource;
 
 import javax.servlet.DispatcherType;
@@ -41,11 +43,16 @@ public class FrontEndServer {
         servletContextHandler.addServlet(DefaultServlet.class, "/*");
         servletContextHandler.setInitParameter("org.eclipse.jetty.servlet.Default.dirAllowed", "false");
 
+        //Login Servlet
+        servletContextHandler.addServlet(new ServletHolder(new LoginServlet(new LoginServices(client))), "/login");
+
+        //Logout Servlet
+        servletContextHandler.addServlet(new ServletHolder(new LogoutServlet(new LoginServices(client))), "/logout");
+
         //Authorization Filter
         FilterHolder authorizationFilter = new FilterHolder(
                 new AuthorizationFilter(
-                        new AuthorizationServices(client, new RolDecider(), new SessionIdParser()
-                        )
+                        new AuthorizationServices(client, new RolDecider())
                 )
         );
 
