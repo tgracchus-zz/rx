@@ -42,7 +42,7 @@ public class LoginServices {
     public boolean logout(String sessionId) {
 
         StringContentProvider sessionContext =
-                new StringContentProvider("{\"sessionId\":\"" + sessionId + "\"");
+                new StringContentProvider("{\"sessionId\":\"" + sessionId + "\"}");
 
         Request request = client.POST("http://localhost:8888/logout")
                 .content(sessionContext);
