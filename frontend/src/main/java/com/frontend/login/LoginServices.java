@@ -1,6 +1,7 @@
 package com.frontend.login;
 
 import org.eclipse.jetty.client.HttpClient;
+import org.eclipse.jetty.client.api.ContentResponse;
 import org.eclipse.jetty.client.api.Request;
 import org.eclipse.jetty.client.util.FutureResponseListener;
 import org.eclipse.jetty.client.util.StringContentProvider;
@@ -31,7 +32,12 @@ public class LoginServices {
         FutureResponseListener listener = new FutureResponseListener(request, 512 * 1024);
         try {
             request.send(listener);
-            return Optional.of(listener.get().getContentAsString());
+            ContentResponse response = listener.get();
+            if (response.getStatus() == 200) {
+                return Optional.of(response.getContentAsString());
+            } else {
+                return Optional.empty();
+            }
 
         } catch (InterruptedException | ExecutionException e) {
             return Optional.empty();
