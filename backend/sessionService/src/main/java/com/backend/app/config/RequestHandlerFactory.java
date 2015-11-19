@@ -1,15 +1,14 @@
-package com.schibsted.backend.app.config;
+package com.backend.app.config;
 
+import com.backend.app.dto.LogoutContext;
+import com.backend.app.endpoints.*;
+import com.backend.app.model.Credentials;
+import com.backend.app.model.Roles;
+import com.backend.app.services.DefaultSessionService;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.schibsted.backend.app.dto.AuthorizationContext;
-import com.schibsted.backend.app.dto.LoginContext;
-import com.schibsted.backend.app.dto.LogoutContext;
-import com.schibsted.backend.app.endpoints.*;
-import com.schibsted.backend.app.model.Credentials;
-import com.schibsted.backend.app.model.Principal;
-import com.schibsted.backend.app.model.Roles;
-import com.schibsted.backend.app.services.DefaultSessionService;
-import com.schibsted.backend.app.services.SessionService;
+import com.backend.app.dto.AuthorizationContext;
+import com.backend.app.dto.LoginContext;
+import com.backend.app.model.Principal;
 import com.schibsted.backend.server.endpoint.Endpoint;
 import com.schibsted.backend.server.endpoint.Endpoints;
 import com.schibsted.backend.server.endpoint.RequestParser;

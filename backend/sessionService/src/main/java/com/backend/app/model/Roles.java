@@ -1,4 +1,4 @@
-package com.schibsted.backend.app.model;
+package com.backend.app.model;
 
 /**
  * Created by ulises on 24/10/15.

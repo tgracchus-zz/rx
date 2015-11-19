@@ -18,7 +18,7 @@ task runServer(dependsOn: [classes], type: JavaExec) {
     group = "com.test"
     description = "Run RX netty"
 
-    main = "com.schibsted.backend.app.SessionService"
+    main = "SessionService"
     classpath = sourceSets.main.runtimeClasspath
 
     jvmArgs "-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=5005"

@@ -1,8 +1,7 @@
-import com.schibsted.backend.app.dto.LoginContext;
-import com.schibsted.backend.app.model.*;
-import com.schibsted.backend.app.services.DefaultSessionService;
-import com.schibsted.backend.app.model.SessionHealthCheck;
-import com.schibsted.backend.app.services.SessionService;
+import com.backend.app.dto.LoginContext;
+import com.backend.app.model.*;
+import com.backend.app.services.DefaultSessionService;
+import com.backend.app.services.SessionService;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;

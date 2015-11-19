@@ -1,4 +1,4 @@
-package com.schibsted.backend.app;
+package com.backend.app;
 
 import com.google.inject.Singleton;
 import com.netflix.governator.annotations.Modules;

@@ -1,9 +1,9 @@
-package com.schibsted.backend.app.services;
+package com.backend.app.services;
 
-import com.schibsted.backend.app.dto.AuthorizationContext;
-import com.schibsted.backend.app.dto.LoginContext;
-import com.schibsted.backend.app.model.Session;
-import com.schibsted.backend.app.model.SessionHealthCheck;
+import com.backend.app.dto.AuthorizationContext;
+import com.backend.app.dto.LoginContext;
+import com.backend.app.model.Session;
+import com.backend.app.model.SessionHealthCheck;
 
 import java.util.Optional;
 import java.util.UUID;

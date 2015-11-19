@@ -1,8 +1,8 @@
-package com.schibsted.backend.app.endpoints;
+package com.backend.app.endpoints;
 
-import com.schibsted.backend.app.dto.LogoutContext;
-import com.schibsted.backend.app.model.Session;
-import com.schibsted.backend.app.services.SessionService;
+import com.backend.app.dto.LogoutContext;
+import com.backend.app.services.SessionService;
+import com.backend.app.model.Session;
 import com.schibsted.backend.server.endpoint.Endpoint;
 import com.schibsted.backend.server.endpoint.RequestParser;
 import com.schibsted.backend.server.handler.Request;

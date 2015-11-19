@@ -1,7 +1,6 @@
-package com.schibsted.backend.app.model;
+package com.backend.app.model;
 
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.Delayed;

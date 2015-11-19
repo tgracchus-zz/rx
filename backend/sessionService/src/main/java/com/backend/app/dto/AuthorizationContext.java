@@ -1,9 +1,8 @@
-package com.schibsted.backend.app.dto;
+package com.backend.app.dto;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.google.common.base.Preconditions;
-import com.schibsted.backend.app.model.Role;
 
 import java.util.UUID;
 

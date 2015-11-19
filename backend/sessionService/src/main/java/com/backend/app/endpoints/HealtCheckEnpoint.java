@@ -1,4 +1,4 @@
-package com.schibsted.backend.app.endpoints;
+package com.backend.app.endpoints;
 
 import com.schibsted.backend.server.endpoint.Endpoint;
 import com.schibsted.backend.server.endpoint.RequestParser;

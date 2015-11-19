@@ -1,8 +1,8 @@
-package com.schibsted.backend.app.services;
+package com.backend.app.services;
 
-import com.schibsted.backend.app.dto.AuthorizationContext;
-import com.schibsted.backend.app.dto.LoginContext;
-import com.schibsted.backend.app.model.*;
+import com.backend.app.model.*;
+import com.backend.app.dto.AuthorizationContext;
+import com.backend.app.dto.LoginContext;
 
 import java.util.ArrayList;
 import java.util.List;

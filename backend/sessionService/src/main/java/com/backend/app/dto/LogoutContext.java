@@ -1,4 +1,4 @@
-package com.schibsted.backend.app.dto;
+package com.backend.app.dto;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;

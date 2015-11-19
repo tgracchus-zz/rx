@@ -1,7 +1,7 @@
-package com.schibsted.backend.app;
+package com.backend.app;
 
 
-import com.schibsted.backend.app.config.RequestHandlerFactory;
+import com.backend.app.config.RequestHandlerFactory;
 import netflix.adminresources.resources.KaryonWebAdminModule;
 import netflix.karyon.Karyon;
 import netflix.karyon.KaryonBootstrapModule;

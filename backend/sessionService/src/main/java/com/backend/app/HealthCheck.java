@@ -1,5 +1,5 @@
 
-package com.schibsted.backend.app;
+package com.backend.app;
 
 import com.google.inject.Singleton;
 import netflix.karyon.health.HealthCheckHandler;

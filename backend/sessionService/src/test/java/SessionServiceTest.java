@@ -1,15 +1,16 @@
-import com.schibsted.backend.app.dto.AuthorizationContext;
-import com.schibsted.backend.app.dto.LoginContext;
-import com.schibsted.backend.app.model.*;
-import com.schibsted.backend.app.services.DefaultSessionService;
-import com.schibsted.backend.app.services.SessionService;
+import com.backend.app.dto.AuthorizationContext;
+import com.backend.app.dto.LoginContext;
+import com.backend.app.model.Credentials;
+import com.backend.app.model.Principal;
+import com.backend.app.model.Roles;
+import com.backend.app.model.Session;
+import com.backend.app.services.DefaultSessionService;
+import com.backend.app.services.SessionService;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
-import java.util.HashSet;
 import java.util.Optional;
-import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 

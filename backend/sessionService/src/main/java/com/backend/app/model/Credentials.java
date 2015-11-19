@@ -1,4 +1,4 @@
-package com.schibsted.backend.app.model;
+package com.backend.app.model;
 
 import com.google.common.base.Preconditions;
 
