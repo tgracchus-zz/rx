@@ -34,25 +34,18 @@ public class RxNettyHandler implements RequestHandler<ByteBuf, ByteBuf> {
                 Request customRequest = new Request(request, request.getHttpMethod(), body);
                 Response customResponse = endpoint.get().call(customRequest);
                 response.setStatus(customResponse.getStatus());
-                addCORSHeader(response);
                 return response.writeStringAndFlush(customResponse.getBody());
 
             });
 
         } else {
             response.setStatus(HttpResponseStatus.BAD_REQUEST);
-            addCORSHeader(response);
             return response.writeStringAndFlush("");
 
         }
 
     }
 
-    private void addCORSHeader(HttpServerResponse<ByteBuf> response) {
-        response.getHeaders().add(HttpHeaders.Names.ACCESS_CONTROL_ALLOW_ORIGIN, "http://localhost:8080");
-        response.getHeaders().add(HttpHeaders.Names.ACCESS_CONTROL_ALLOW_METHODS, "GET, POST, PUT");
-        response.getHeaders().add(HttpHeaders.Names.ACCESS_CONTROL_ALLOW_HEADERS, "Content-Type");
-    }
 }
 
 
