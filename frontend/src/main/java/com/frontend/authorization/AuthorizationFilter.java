@@ -50,9 +50,11 @@ public class AuthorizationFilter implements Filter {
             } else {
                 httpServletResponse.sendRedirect("/pages/login.html");
             }
+        }else{
+            chain.doFilter(request, response);
         }
 
-        chain.doFilter(request, response);
+
     }
 
     @Override
