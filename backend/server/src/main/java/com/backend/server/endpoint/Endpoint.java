@@ -1,10 +1,12 @@
-package com.schibsted.backend.server.endpoint;
+package com.backend.server.endpoint;
 
-import com.schibsted.backend.server.handler.Request;
-import com.schibsted.backend.server.handler.Response;
-import com.schibsted.backend.server.handler.ResponseBuilder;
+import com.backend.server.handler.Request;
+import com.backend.server.handler.Response;
+import com.backend.server.handler.ResponseBuilder;
 import io.netty.handler.codec.http.HttpMethod;
 import io.netty.handler.codec.http.HttpResponseStatus;
+import rx.Observable;
+import rx.schedulers.Schedulers;
 
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -29,9 +31,9 @@ public abstract class Endpoint<T> {
 
     private final Logger log = Logger.getLogger(Endpoint.class.getName());
 
-    public abstract Response doCall(Request request, T parsedRequest) throws Exception;
+    public abstract Observable<Response> doCall(Request request, T parsedRequest) throws Exception;
 
-    public Response call(Request request) {
+    public Observable<Response> call(Request request) {
         try {
 
             T requestObject = requestParser.parse(request);
@@ -55,11 +57,11 @@ public abstract class Endpoint<T> {
         return false;
     }
 
-    protected Response newResponse(HttpResponseStatus status, Request request, Object response) {
+    protected Observable<Response> newResponse(HttpResponseStatus status, Request request, Object response) {
         return responseBuilder.newResponse(status, request, response);
     }
 
-    protected Response newServerErrorResponse(Request request, Object response) {
+    protected Observable<Response> newServerErrorResponse(Request request, Object response) {
         return responseBuilder.newResponse(HttpResponseStatus.INTERNAL_SERVER_ERROR, request, response);
     }
 }

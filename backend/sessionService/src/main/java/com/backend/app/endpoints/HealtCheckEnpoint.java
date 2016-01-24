@@ -1,12 +1,13 @@
 package com.backend.app.endpoints;
 
-import com.schibsted.backend.server.endpoint.Endpoint;
-import com.schibsted.backend.server.endpoint.RequestParser;
-import com.schibsted.backend.server.handler.Request;
-import com.schibsted.backend.server.handler.Response;
-import com.schibsted.backend.server.handler.ResponseBuilder;
+import com.backend.server.endpoint.Endpoint;
+import com.backend.server.endpoint.RequestParser;
+import com.backend.server.handler.Request;
+import com.backend.server.handler.Response;
+import com.backend.server.handler.ResponseBuilder;
 import io.netty.handler.codec.http.HttpMethod;
 import io.netty.handler.codec.http.HttpResponseStatus;
+import rx.Observable;
 
 /**
  * Created by ulises on 24/10/15.
@@ -18,7 +19,7 @@ public class HealtCheckEnpoint extends Endpoint<Void> {
     }
 
     @Override
-    public Response doCall(Request request, Void parsedRequest) throws Exception {
-        return new Response(HttpResponseStatus.OK, request, ":)");
+    public Observable<Response> doCall(Request request, Void parsedRequest) throws Exception {
+        return newResponse(HttpResponseStatus.OK, request, ":)");
     }
 }

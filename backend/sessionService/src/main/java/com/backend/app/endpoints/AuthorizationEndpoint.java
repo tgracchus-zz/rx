@@ -1,15 +1,17 @@
 package com.backend.app.endpoints;
 
 
-import com.backend.app.services.SessionService;
 import com.backend.app.dto.AuthorizationContext;
-import com.schibsted.backend.server.endpoint.Endpoint;
-import com.schibsted.backend.server.endpoint.RequestParser;
-import com.schibsted.backend.server.handler.Request;
-import com.schibsted.backend.server.handler.Response;
-import com.schibsted.backend.server.handler.ResponseBuilder;
+import com.backend.app.services.SessionService;
+import com.backend.server.endpoint.Endpoint;
+import com.backend.server.endpoint.RequestParser;
+import com.backend.server.handler.Request;
+import com.backend.server.handler.Response;
+import com.backend.server.handler.ResponseBuilder;
 import io.netty.handler.codec.http.HttpMethod;
 import io.netty.handler.codec.http.HttpResponseStatus;
+import rx.Observable;
+import rx.schedulers.Schedulers;
 
 public class AuthorizationEndpoint extends Endpoint<AuthorizationContext> {
 
@@ -23,10 +25,9 @@ public class AuthorizationEndpoint extends Endpoint<AuthorizationContext> {
     }
 
     @Override
-    public Response doCall(Request request, AuthorizationContext authorizationContext) throws Exception {
-        boolean authorized = sessionService.authorize(authorizationContext);
-
-        return newResponse(HttpResponseStatus.OK, request, new Boolean(authorized));
+    public Observable<Response> doCall(Request request, AuthorizationContext authorizationContext) throws Exception {
+        return sessionService.authorize(authorizationContext)
+                .flatMap(authorized -> (newResponse(HttpResponseStatus.OK, request, new Boolean(authorized))));
 
     }
 

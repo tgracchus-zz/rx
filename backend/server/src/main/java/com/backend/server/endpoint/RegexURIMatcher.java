@@ -1,4 +1,4 @@
-package com.schibsted.backend.server.endpoint;
+package com.backend.server.endpoint;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;

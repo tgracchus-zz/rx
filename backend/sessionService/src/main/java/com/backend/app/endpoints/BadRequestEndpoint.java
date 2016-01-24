@@ -10,21 +10,16 @@ import io.netty.handler.codec.http.HttpResponseStatus;
 import rx.Observable;
 
 /**
- * Created by ulises on 24/10/15.
+ * Created by ulises on 23/01/16.
  */
-public class CORSEndpoint extends Endpoint<Void> {
+public class BadRequestEndpoint extends Endpoint<Void> {
 
-    public CORSEndpoint(String pathExpression, HttpMethod httpMethod, ResponseBuilder responseBuilder, RequestParser<Void> requestParser) {
+    public BadRequestEndpoint(String pathExpression, ResponseBuilder responseBuilder, HttpMethod httpMethod, RequestParser<Void> requestParser) {
         super(pathExpression, responseBuilder, httpMethod, requestParser);
     }
 
     @Override
     public Observable<Response> doCall(Request request, Void parsedRequest) throws Exception {
-        return newResponse(HttpResponseStatus.OK, request, ":)");
-    }
-
-    @Override
-    public boolean match(String requestUri, HttpMethod method) {
-        return super.match(requestUri, method);
+        return newResponse(HttpResponseStatus.BAD_REQUEST, request, new String(""));
     }
 }

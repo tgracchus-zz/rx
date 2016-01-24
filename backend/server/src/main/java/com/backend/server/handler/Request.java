@@ -1,4 +1,4 @@
-package com.schibsted.backend.server.handler;
+package com.backend.server.handler;
 
 import io.netty.buffer.ByteBuf;
 import io.netty.handler.codec.http.HttpMethod;

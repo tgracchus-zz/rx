@@ -1,4 +1,4 @@
-package com.schibsted.backend.server.endpoint;
+package com.backend.server.endpoint;
 
 public interface URIMatcher {
 

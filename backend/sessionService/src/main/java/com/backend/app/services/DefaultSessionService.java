@@ -1,8 +1,10 @@
 package com.backend.app.services;
 
-import com.backend.app.model.*;
 import com.backend.app.dto.AuthorizationContext;
 import com.backend.app.dto.LoginContext;
+import com.backend.app.model.*;
+import rx.Observable;
+import rx.schedulers.Schedulers;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -37,52 +39,60 @@ public class DefaultSessionService implements SessionService {
 
         this.expirationInMilliseconds = expirationInMilliseconds;
 
-        executorService =  Executors.newSingleThreadExecutor();
+        executorService = Executors.newSingleThreadExecutor();
 
     }
 
-    public void startExpiration(){
-        executorService.execute(new ExpireThread(this,expirationInMilliseconds));
+    public void startExpiration() {
+        executorService.execute(new ExpireThread(this, expirationInMilliseconds));
     }
 
-    public void stopExpiration(){
+    public void stopExpiration() {
         executorService.shutdown();
     }
 
     @Override
-    public Optional<Session> login(LoginContext loginContext) {
+    public Observable<Optional<Session>> login(LoginContext loginContext) {
+        Observable<Optional<Session>> sessionOb =  Observable.create(subscriber -> {
+            Principal principal = new Principal(loginContext.getUserId(), loginContext.getPassword());
 
-        Principal principal = new Principal(loginContext.getUserId(), loginContext.getPassword());
-        return Optional.ofNullable(credentialsByUser.get(principal.getUserId()))
-                .filter(credentials -> principal.equals(credentials.getPrincipal()))
-                .map(credentials -> {
-                    UUID sessionId = sessionByUser.computeIfAbsent(credentials.getUserId(), userId -> UUID.randomUUID());
-                    Session session = sessionsById.computeIfAbsent(sessionId, uuid -> {
-                        Session newSession = new Session(uuid, principal.getUserId(), expirationInMilliseconds, credentials.getRoles());
-                        return newSession;
+            Optional<Session> sessionOptional = Optional.ofNullable(credentialsByUser.get(principal.getUserId()))
+                    .filter(credentials -> principal.equals(credentials.getPrincipal()))
+                    .map(credentials -> {
+                        UUID sessionId = sessionByUser.computeIfAbsent(credentials.getUserId(), userId -> UUID.randomUUID());
+                        Session session = sessionsById.computeIfAbsent(sessionId, uuid -> {
+                            Session newSession = new Session(uuid, principal.getUserId(), expirationInMilliseconds, credentials.getRoles());
+                            return newSession;
+                        });
+
+                        expirationQueue.add(session);
+                        return session;
                     });
 
-                    expirationQueue.add(session);
-                    return session;
-                });
+            subscriber.onNext(sessionOptional);
+
+        });
+
+        return sessionOb.subscribeOn(Schedulers.io());
+
     }
 
 
     @Override
-    public Optional<Session> logout(UUID sessionId) {
+    public Observable<Optional<Session>> logout(UUID sessionId) {
         return
-                Optional.ofNullable(sessionsById.computeIfPresent(sessionId, (currentSessionId, currentSession) -> {
+                Observable.just(Optional.ofNullable(sessionsById.computeIfPresent(sessionId, (currentSessionId, currentSession) -> {
                     Session deletedSession = sessionsById.remove(currentSessionId);
                     sessionByUser.remove(currentSession.getUserId());
                     return deletedSession;
-                }));
+                }))).subscribeOn(Schedulers.io());
     }
 
     @Override
-    public boolean authorize(AuthorizationContext authorizationContext) {
+    public Observable<Boolean> authorize(AuthorizationContext authorizationContext) {
 
-        return Optional.ofNullable(sessionsById.get(authorizationContext.getSessionId()))
-                .map(session -> {
+        return Observable.just
+                (Optional.ofNullable(sessionsById.get(authorizationContext.getSessionId())).map(session -> {
                             boolean authorized = credentialsByUser.get(session.getUserId())
                                     .containsRole(new Role(authorizationContext.getRoleToCheck()));
 
@@ -90,16 +100,17 @@ public class DefaultSessionService implements SessionService {
 
                             return authorized;
                         }
-                ).orElse(false);
+                        ).orElse(false)
+                ).subscribeOn(Schedulers.io());
 
     }
 
     @Override
-    public SessionHealthCheck healtcheck() {
-        return new SessionHealthCheck(sessionsById.size(), sessionByUser.size(), expirationQueue.size());
+    public Observable<SessionHealthCheck> healtcheck() {
+        return Observable.just
+                (new SessionHealthCheck(sessionsById.size(), sessionByUser.size(), expirationQueue.size()))
+                .subscribeOn(Schedulers.io());
     }
-
-
 
 
     private static class ExpireThread implements Runnable {

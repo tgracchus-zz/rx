@@ -1,4 +1,4 @@
-package com.schibsted.backend.server.endpoint;
+package com.backend.server.endpoint;
 
 /**
  * Created by ulises on 10/10/15.

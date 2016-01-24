@@ -1,17 +1,16 @@
 package com.backend.app.endpoints;
 
-import com.backend.app.services.SessionService;
 import com.backend.app.dto.LoginContext;
-import com.backend.app.model.Session;
-import com.schibsted.backend.server.endpoint.Endpoint;
-import com.schibsted.backend.server.endpoint.RequestParser;
-import com.schibsted.backend.server.handler.Request;
-import com.schibsted.backend.server.handler.Response;
-import com.schibsted.backend.server.handler.ResponseBuilder;
+import com.backend.app.services.SessionService;
+import com.backend.server.endpoint.Endpoint;
+import com.backend.server.endpoint.RequestParser;
+import com.backend.server.handler.Request;
+import com.backend.server.handler.Response;
+import com.backend.server.handler.ResponseBuilder;
 import io.netty.handler.codec.http.HttpMethod;
 import io.netty.handler.codec.http.HttpResponseStatus;
-
-import java.util.Optional;
+import rx.Observable;
+import rx.schedulers.Schedulers;
 
 public class LoginEndpoint extends Endpoint<LoginContext> {
 
@@ -24,15 +23,15 @@ public class LoginEndpoint extends Endpoint<LoginContext> {
     }
 
     @Override
-    public Response doCall(Request request, LoginContext loginContext) throws Exception {
-
-        Optional<Session> session = sessionService.login(loginContext);
-
-        if (session.isPresent()) {
-            return newResponse(HttpResponseStatus.OK, request, session.get());
-        } else {
-            return newResponse(HttpResponseStatus.UNAUTHORIZED, request, String.valueOf(HttpResponseStatus.UNAUTHORIZED));
-        }
+    public Observable<Response> doCall(Request request, LoginContext loginContext) throws Exception {
+        return sessionService.login(loginContext)
+                .flatMap(session -> {
+                    if (session.isPresent()) {
+                        return newResponse(HttpResponseStatus.OK, request, session.get());
+                    } else {
+                        return newResponse(HttpResponseStatus.UNAUTHORIZED, request, String.valueOf(HttpResponseStatus.UNAUTHORIZED));
+                    }
+                });
     }
 
 }

@@ -1,9 +1,9 @@
-package com.schibsted.backend.server.parser;
+package com.backend.server.parser;
 
+import com.backend.server.endpoint.RequestParser;
+import com.backend.server.handler.Request;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.schibsted.backend.server.endpoint.RequestParser;
-import com.schibsted.backend.server.endpoint.RequestParserException;
-import com.schibsted.backend.server.handler.Request;
+import com.backend.server.endpoint.RequestParserException;
 
 import java.io.IOException;
 

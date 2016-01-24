@@ -4,6 +4,7 @@ import com.backend.app.dto.AuthorizationContext;
 import com.backend.app.dto.LoginContext;
 import com.backend.app.model.Session;
 import com.backend.app.model.SessionHealthCheck;
+import rx.Observable;
 
 import java.util.Optional;
 import java.util.UUID;
@@ -13,11 +14,11 @@ import java.util.UUID;
  */
 public interface SessionService {
 
-    Optional<Session> login(LoginContext principal);
+    Observable<Optional<Session>> login(LoginContext principal);
 
-    Optional<Session> logout(UUID sessionId);
+    Observable<Optional<Session>> logout(UUID sessionId);
 
-    boolean authorize(AuthorizationContext authorizationContext);
+    Observable<Boolean> authorize(AuthorizationContext authorizationContext);
 
-    SessionHealthCheck healtcheck();
+    Observable<SessionHealthCheck> healtcheck();
 }

@@ -1,6 +1,6 @@
-package com.schibsted.backend.server.endpoint;
+package com.backend.server.endpoint;
 
-import com.schibsted.backend.server.handler.Request;
+import com.backend.server.handler.Request;
 
 /**
  * Created by ulises on 10/10/15.
