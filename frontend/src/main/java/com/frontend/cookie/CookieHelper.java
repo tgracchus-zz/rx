@@ -25,12 +25,16 @@ public class CookieHelper {
     }
 
     public static Optional<String> parseSessionId(String session) {
-        String[] vars = session.split(",");
-        String sessionVar = vars[1].split(":")[1];
-        return Optional.of(sessionVar.replace("\"", ""));
+        if (!session.isEmpty()) {
+            String[] vars = session.split(",");
+            String sessionVar = vars[1].split(":")[1];
+            return Optional.of(sessionVar.replace("\"", ""));
+        }
+
+        return Optional.empty();
     }
 
-    public static Cookie newCookie(int maxAge,String session){
+    public static Cookie newCookie(int maxAge, String session) {
         Cookie sessionCookie = new Cookie(FrontEndConstants.SESSION_COOKIE_NAME, session);
         sessionCookie.setPath("/");
         sessionCookie.setMaxAge(maxAge);

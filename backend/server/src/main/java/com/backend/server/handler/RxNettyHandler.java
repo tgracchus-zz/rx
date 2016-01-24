@@ -24,7 +24,7 @@ public class RxNettyHandler implements RequestHandler<ByteBuf, ByteBuf> {
 
     @Override
     public Observable<Void> handle(HttpServerRequest<ByteBuf> request, HttpServerResponse<ByteBuf> response) {
-        return request.getContent()
+       return request.getContent()
                 .map(byteBuf -> {
                     String body = byteBuf.toString(Charset.defaultCharset());
                     return new Request(request, request.getHttpMethod(), body);
@@ -38,9 +38,11 @@ public class RxNettyHandler implements RequestHandler<ByteBuf, ByteBuf> {
 
                 .flatMap(wrappedResponse -> {
                     response.setStatus(wrappedResponse.getStatus());
-                    return response.writeStringAndFlush(wrappedResponse.getBody());
+                    response.writeStringAndFlush(wrappedResponse.getBody());
+                    return response.close();
                 });
-    }
+
+     }
 }
 
 
