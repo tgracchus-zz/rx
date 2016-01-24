@@ -83,7 +83,7 @@ public class SessionServiceTest {
                 .subscribe(session -> Assert.assertFalse(session.isPresent()));
 
     }
-/*
+
     @Test
     public void testLoginLogout() throws Exception {
         sessionService.login(loginContext)
@@ -91,98 +91,106 @@ public class SessionServiceTest {
                     Assert.assertTrue(loginSession.isPresent());
                     Assert.assertEquals(loginContext.getUserId(), loginSession.get().getUserId());
                     return loginSession;
-                }).map(session -> session);
-
-
-        Optional<Session> logOutSession =
-                Assert.assertTrue(logOutSession.isPresent());
-        Assert.assertEquals(loginContext.getUserId(), logOutSession.get().getUserId());
-
-        Assert.assertEquals(loginSession.get(), logOutSession.get());
-
-        AuthorizationContext authorizationContext = new AuthorizationContext(loginSession.get().getSessionId(), Roles.PAGE_1.getRole());
-        Assert.assertFalse(sessionService.authorize(authorizationContext));
+                }).subscribe(loginSession -> {
+                    sessionService.logout(loginSession.get().getSessionId())
+                            .subscribe(logOutSession -> {
+                                Assert.assertEquals(loginSession.get(), logOutSession.get());
+                                Assert.assertTrue(logOutSession.isPresent());
+                                Assert.assertEquals(loginContext.getUserId(), logOutSession.get().getUserId());
+                            });
+                }
+        );
 
     }
 
+
     @Test
     public void testLoginTwice() throws Exception {
-        Optional<Session> loginSession = sessionService.login(loginContext);
+        sessionService.login(loginContext)
+                .subscribe(loginSession -> {
+                    Assert.assertTrue(loginSession.isPresent());
+                    Assert.assertEquals(loginContext.getUserId(), loginSession.get().getUserId());
+                    AuthorizationContext authorizationContext = new AuthorizationContext(loginSession.get().getSessionId(), Roles.PAGE_1.getRole());
+                    sessionService.authorize(authorizationContext);
 
-        Assert.assertTrue(loginSession.isPresent());
-        Assert.assertEquals(loginContext.getUserId(), loginSession.get().getUserId());
+                    sessionService.login(loginContext)
+                            .subscribe(secondLoginSession -> {
+                                Assert.assertTrue(secondLoginSession.isPresent());
+                                Assert.assertEquals(loginContext.getUserId(), secondLoginSession.get().getUserId());
 
-        AuthorizationContext authorizationContext = new AuthorizationContext(loginSession.get().getSessionId(), Roles.PAGE_1.getRole());
-        Assert.assertTrue(sessionService.authorize(authorizationContext));
+                                AuthorizationContext secondAuthorizationContext = new AuthorizationContext(loginSession.get().getSessionId(), Roles.PAGE_1.getRole());
+                                sessionService.authorize(secondAuthorizationContext).subscribe(aBoolean ->
+                                        Assert.assertTrue(aBoolean)
+                                );
+                                Assert.assertEquals(loginSession.get(), secondLoginSession.get());
+                            });
 
+                });
 
-        Optional<Session> secondLoginSession = sessionService.login(loginContext);
-
-        Assert.assertTrue(secondLoginSession.isPresent());
-        Assert.assertEquals(loginContext.getUserId(), secondLoginSession.get().getUserId());
-
-        AuthorizationContext secondAuthorizationContext = new AuthorizationContext(loginSession.get().getSessionId(), Roles.PAGE_1.getRole());
-        Assert.assertTrue(sessionService.authorize(secondAuthorizationContext));
-
-        Assert.assertEquals(loginSession.get(), secondLoginSession.get());
 
     }
 
     @Test
     public void testLoginLogoutLogout() throws Exception {
-        Optional<Session> loginSession = sessionService.login(loginContext);
-        Assert.assertTrue(loginSession.isPresent());
-        Assert.assertEquals(loginContext.getUserId(), loginSession.get().getUserId());
+        sessionService.login(loginContext)
+                .subscribe(loginSession -> {
+                    Assert.assertTrue(loginSession.isPresent());
+                    Assert.assertEquals(loginContext.getUserId(), loginSession.get().getUserId());
+                    sessionService.logout(loginSession.get().getSessionId())
+                            .subscribe(logOutSession -> {
+                                Assert.assertTrue(logOutSession.isPresent());
+                                Assert.assertEquals(loginContext.getUserId(), logOutSession.get().getUserId());
+                                Assert.assertEquals(loginSession.get(), logOutSession.get());
 
-        Optional<Session> logOutSession = sessionService.logout(loginSession.get().getSessionId());
-        Assert.assertTrue(logOutSession.isPresent());
-        Assert.assertEquals(loginContext.getUserId(), logOutSession.get().getUserId());
-
-        Assert.assertEquals(loginSession.get(), logOutSession.get());
-
-        Optional<Session> retryLogout = sessionService.logout(loginSession.get().getSessionId());
-        Assert.assertFalse(retryLogout.isPresent());
-
+                                sessionService.logout(loginSession.get().getSessionId()).subscribe(retryLogout ->
+                                        Assert.assertFalse(retryLogout.isPresent())
+                                );
+                            });
+                });
     }
 
     @Test
     public void testLoginLogoutLogin() throws Exception {
-        Optional<Session> loginSession = sessionService.login(loginContext);
-        Assert.assertTrue(loginSession.isPresent());
-        Assert.assertEquals(loginContext.getUserId(), loginSession.get().getUserId());
+        sessionService.login(loginContext)
+                .subscribe(loginSession -> {
+                    Assert.assertTrue(loginSession.isPresent());
+                    Assert.assertEquals(loginContext.getUserId(), loginSession.get().getUserId());
+                    sessionService.logout(loginSession.get().getSessionId())
+                            .subscribe(logOutSession -> {
+                                Assert.assertTrue(logOutSession.isPresent());
+                                Assert.assertEquals(loginContext.getUserId(), logOutSession.get().getUserId());
+                                Assert.assertEquals(loginSession.get(), logOutSession.get());
+                                sessionService.login(loginContext).subscribe(secondLoginSession -> {
+                                    Assert.assertTrue(secondLoginSession.isPresent());
+                                    Assert.assertEquals(loginContext.getUserId(), loginSession.get().getUserId());
 
-        Optional<Session> logOutSession = sessionService.logout(loginSession.get().getSessionId());
-        Assert.assertTrue(logOutSession.isPresent());
-        Assert.assertEquals(loginContext.getUserId(), logOutSession.get().getUserId());
+                                    Assert.assertNotEquals(logOutSession, secondLoginSession);
+                                    Assert.assertNotEquals(loginSession, secondLoginSession);
+                                });
 
-        Assert.assertEquals(loginSession.get(), logOutSession.get());
-
-        Optional<Session> secondLoginSession = sessionService.login(loginContext);
-        Assert.assertTrue(secondLoginSession.isPresent());
-        Assert.assertEquals(loginContext.getUserId(), loginSession.get().getUserId());
-
-        Assert.assertNotEquals(logOutSession, secondLoginSession);
-        Assert.assertNotEquals(loginSession, secondLoginSession);
-
+                            });
+                });
     }
 
     @Test
     public void testLoginLoginLogout() throws Exception {
-        Optional<Session> loginSession = sessionService.login(loginContext);
-        Assert.assertTrue(loginSession.isPresent());
-        Assert.assertEquals(loginContext.getUserId(), loginSession.get().getUserId());
+        sessionService.login(loginContext)
+                .subscribe(loginSession -> {
+                    Assert.assertTrue(loginSession.isPresent());
+                    Assert.assertEquals(loginContext.getUserId(), loginSession.get().getUserId());
+                    sessionService.login(loginContext).subscribe(secondLoginSession -> {
+                        Assert.assertTrue(secondLoginSession.isPresent());
+                        Assert.assertEquals(loginContext.getUserId(), loginSession.get().getUserId());
+                        sessionService.logout(loginSession.get().getSessionId())
+                                .subscribe(logOutSession -> {
+                                    Assert.assertTrue(logOutSession.isPresent());
+                                    Assert.assertEquals(loginContext.getUserId(), logOutSession.get().getUserId());
+                                });
+                        sessionService.logout(secondLoginSession.get().getSessionId())
+                                .subscribe(secondLogOutSession -> Assert.assertFalse(secondLogOutSession.isPresent()));
 
-        Optional<Session> secondLoginSession = sessionService.login(loginContext);
-        Assert.assertTrue(secondLoginSession.isPresent());
-        Assert.assertEquals(loginContext.getUserId(), loginSession.get().getUserId());
-
-        Optional<Session> logOutSession = sessionService.logout(loginSession.get().getSessionId());
-        Assert.assertTrue(logOutSession.isPresent());
-        Assert.assertEquals(loginContext.getUserId(), logOutSession.get().getUserId());
-
-        Optional<Session> secondLogOutSession = sessionService.logout(secondLoginSession.get().getSessionId());
-        Assert.assertFalse(secondLogOutSession.isPresent());
-
-    }*/
+                    });
+                });
+    }
 
 }

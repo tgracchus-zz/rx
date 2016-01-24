@@ -1,5 +1,7 @@
 import com.backend.app.dto.LoginContext;
-import com.backend.app.model.*;
+import com.backend.app.model.Credentials;
+import com.backend.app.model.Principal;
+import com.backend.app.model.Roles;
 import com.backend.app.services.DefaultSessionService;
 import com.backend.app.services.SessionService;
 import org.junit.Assert;
@@ -8,7 +10,6 @@ import org.junit.Test;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
@@ -21,7 +22,7 @@ public class ConcurrentSessionServiceTest {
     private LoginContext loginContext;
 
     private List<ImpatientUser> impatientUsers;
-/*
+
     @Before
     public void setUp() throws Exception {
         loginContext = new LoginContext("user1", "password1");
@@ -60,11 +61,12 @@ public class ConcurrentSessionServiceTest {
         public void run() {
 
             for (int i = 0; i < 10; i++) {
-                Optional<Session> loginSession = sessionService.login(loginContext);
-                Assert.assertTrue(loginSession.isPresent());
-                Assert.assertEquals(loginContext.getUserId(), loginSession.get().getUserId());
-
-                sessionService.logout(loginSession.get().getSessionId());
+                sessionService.login(loginContext)
+                        .subscribe(loginSession -> {
+                            Assert.assertTrue(loginSession.isPresent());
+                            Assert.assertEquals(loginContext.getUserId(), loginSession.get().getUserId());
+                            sessionService.logout(loginSession.get().getSessionId());
+                        });
 
             }
 
@@ -75,21 +77,31 @@ public class ConcurrentSessionServiceTest {
     public void testLoginLogout() throws Exception {
 
         for (int i = 0; i < 100; i++) {
-            Optional<Session> loginSession = sessionService.login(loginContext);
+            sessionService.login(loginContext)
+                    .subscribe(loginSession -> {
 
-            AssertConcurrent.assertConcurrent("Finish Impatient User", impatientUsers, 120);
+                        try {
+                            AssertConcurrent.assertConcurrent("Finish Impatient User", impatientUsers, 120);
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();
+                        }
+                        sessionService.login(loginContext).subscribe(secondLoginSession -> {
 
-            Optional<Session> secondLoginSession = sessionService.login(loginContext);
-            Optional<Session> logOutSession = sessionService.logout(secondLoginSession.get().getSessionId());
+                            sessionService.logout(secondLoginSession.get().getSessionId());
 
-            SessionHealthCheck sessionHealthCheck = sessionService.healtcheck();
-            Assert.assertEquals(0, sessionHealthCheck.getNumberOfUsers());
-            Assert.assertEquals(0, sessionHealthCheck.getNumberOfSessions());
+                            sessionService.healtcheck().subscribe(sessionHealthCheck -> {
+                                Assert.assertEquals(0, sessionHealthCheck.getNumberOfUsers());
+                                Assert.assertEquals(0, sessionHealthCheck.getNumberOfSessions());
+                            });
 
-            Assert.assertNotEquals(loginSession.get(), secondLoginSession.get());
+
+                            Assert.assertNotEquals(loginSession.get(), secondLoginSession.get());
+                        });
+
+                    });
 
         }
     }
 
-*/
+
 }
